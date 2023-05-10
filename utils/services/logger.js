@@ -1,70 +1,76 @@
-const { MessageEmbed } = require("discord.js");
-const { getDateTime } = require('../../functions/systemFunctions');
+const winston = require("winston");
+const { getDateTime } = require("../../functions/systemFunctions");
 
-const categoryColorMap = new Map([
-    ['config', ''],
-    ['tickets', ''],
-    ['database', '']
-])
 
-class LoggerService {
-    constructor(category, defaultColor) {
-        this.logData = null;
+module.exports = class Logger {
+    /**
+     * Create Logger instance for each category
+     * @param category {String}
+     */
+    constructor(category) {
         this.category = category;
-        this.defaultColor = defaultColor;
-        this.logMember = null;
-        this.guild = null;
-        this.logChannel = null;
-
-        this.createLogEmbed = (message, color, level) => {
-            const logEmbed = new MessageEmbed()
-                .setColor(color)
-
-            this.logData
-                ? logEmbed.setDescription(`\`\`\`${getDateTime()} | ${level.toUpperCase()} | ${this.category.toUpperCase()}\`\`\`\n${message}\n\`\`\`\n${this.logData}\`\`\``)
-                : logEmbed.setDescription(`\`\`\`${getDateTime()} | ${level.toUpperCase()} | ${this.category.toUpperCase()}\`\`\`\n${message}`);
-            this.logMember
-                ? logEmbed.setAuthor(this.logMember.user.tag, this.logMember.user.displayAvatarURL())
-                : null;
-            return logEmbed
-        }
+        this.logData = undefined;
+        this.logger = winston.createLogger({
+            transports: [
+                new winston.transports.File({
+                    filename: `logs/app-error.log`,
+                    level: 'warn'
+                }),
+                new winston.transports.File({
+                    filename: `logs/app-info.log`,
+                    level: 'info'
+                }),
+                new winston.transports.Console({
+                    level: 'info'
+                })
+            ],
+            format: winston.format.printf((info) => {
+                let message = `${getDateTime()} | ${info.level.toUpperCase()} | ${this.category}.log | ${info.message} | `;
+                message = this.logData ? message + `${JSON.stringify(this.logData)} |` : message;
+                return message;
+            })
+        })
+    }
+    /**
+     * Send info level message
+     * @param message {String}
+     * @param logData {JSON}
+     * @return {void}
+     */
+    info(message, logData = undefined) {
+        this.logData = logData ? logData : undefined;
+        this.logger.log('info', message);
+    }
+    /**
+     * Send error level message
+     * @param message {String}
+     * @param logData {JSON}
+     * @return {void}
+     */
+    error(message, logData = undefined) {
+        this.logData = logData ? logData : undefined;
+        this.logger.log('error', message);
+    }
+    /**
+     * Send debug level message
+     * @param message {String}
+     * @param logData {JSON}
+     * @return {void}
+     */
+    debug(message, logData = undefined) {
+        this.logData = logData ? logData : undefined;
+        this.logger.log('debug', message);
+    }
+    /**
+     * Send log message without level preset
+     * @param message {String}
+     * @param level {String}
+     * @param logData {JSON}
+     * @return {void}
+     */
+    log(message, level, logData = undefined) {
+        this.logData = logData ? logData : undefined;
+        this.logger.log(level, message);
     }
 
-    setLogData(logData) {
-        this.logData = logData;
-    }
-
-    setLogMember(member) {
-        this.logMember = member;
-    }
-
-    setGuild(guild) {
-        this.guild = guild;
-        const guildConfig = guild.client.config.get(guild.id)
-        this.logChannel = guildConfig.logChannelId ? guild.channels.cache.get(guildConfig.logChannelId) : undefined
-    }
-
-    async error(message) {
-        const embed = this.createLogEmbed(message, '#e74c3c', 'error')
-        this.logChannel ? this.logChannel.send({
-            embeds: [embed]
-        }) : null
-    }
-
-    async warning(message) {
-        const embed = this.createLogEmbed(message, '#f39c12', 'warning')
-        this.logChannel ? this.logChannel.send({
-            embeds: [embed]
-        }) : null
-    }
-
-    async info(message) {
-        const embed = this.createLogEmbed(message, this.defaultColor, 'info')
-        this.logChannel ? this.logChannel.send({
-            embeds: [embed]
-        }) : null
-    }
 }
-
-
-module.exports = LoggerService;
