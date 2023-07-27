@@ -10,10 +10,6 @@ const GuildSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.String,
         required: true,
     },
-    prefix: {
-        type: mongoose.SchemaTypes.String,
-        default: '/'
-    },
     slashCommands: {
         type: Boolean,
         default: true

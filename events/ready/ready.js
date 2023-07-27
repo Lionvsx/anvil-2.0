@@ -33,30 +33,10 @@ module.exports = class ReadyEvent extends BaseEvent {
                 })
             }
         }
-        client.log('Started refreshing application (/) commands.');
-        for (const [key, value] of client.guilds.cache) {
-            const guild = await client.guilds.cache.get(key)
-            const guildConfig = client.config.get(key)
-            await guild.members.fetch()
-            if (guildConfig) {
-                client.log(`Cached ${guild.members.cache.size} members data for guild : ${value.name}`)
-                if (guildConfig.slashCommands === true) {
-                    if (commands.length > 0) {
-                        try {
-                            await client.application.commands.set(commands, guild.id)
-                            client.log(`Loaded ${commands.length} (/) commands for guild ${guild.name}`)
-                        } catch (err) {
-                            client.error(`Failed setting application commands`, err)
-                        }
-                    } else await guild.commands.set([])
 
-                } else await guild.commands.set([])
-            }
+
+        for (const [key, value] of client.openAIFunctions) {
+            client.functionsArray.push(value.openaiFunction)
         }
-        client.log('Successfully reloaded application (/) commands.');
-
-
-
-
     }
 }
