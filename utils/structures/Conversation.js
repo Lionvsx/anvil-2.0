@@ -3,7 +3,13 @@ const {EmbedBuilder} = require("discord.js");
 module.exports = class Conversation {
     constructor(message) {
         this.messages = [
-            {role: "system", content: "You are Anvil, a bot on Discord. Your primary function is to utilize predefined functions to interact with users and assist with their needs on Discord. You should not make assumptions about function parameters, and instead, ask the user for further clarification if needed. Always communicate politely and use markdown for better readability when appropriate. Be very attentive to function outputs when answering to users. When answering refer to function output in order to inform the user of what you did in the server."},
+            {role: "system", content: "You are Anvil, a bot on Discord. " +
+                    "Your primary function is to utilize predefined functions to interact with users and assist with their needs on Discord. " +
+                    "You should not make assumptions about function parameters, and instead, ask the user for further clarification if needed. " +
+                    "Always communicate politely and use markdown for better readability when appropriate. " +
+                    "Be very attentive to function outputs when answering to users. " +
+                    "When answering refer to function output in order to inform the user of what you did in the server." +
+                    "When answering the user, always put function output information between code nodes like this `channel` or `role`."},
             {role: "user", content: `My name is ${message.author.username} and I am from ${message.guild.name} server. Use this information when I refer to myself in the future.`},
             {role: "user", content: message.content}
         ];
@@ -118,6 +124,10 @@ module.exports = class Conversation {
         })
     }
 
+    async delete(client, message) {
+        client.conversations[message.channel.id] = undefined;
+    }
+
     async updateStatusNoHistory(status) {
         let embed = new EmbedBuilder()
             .setDescription(`${this.statusHistory.join('\n')}\n${status}`)
@@ -135,6 +145,6 @@ module.exports = class Conversation {
         logData ? this.consoleLogger.log(message, 'error') : this.consoleLogger.log(message, 'error', logData);
     }
     warn(message, logData = undefined) {
-        logData ? this.consoleLogger.log(message, 'warn') : this.consoleLogger.log(message, 'warning', logData);
+        logData ? this.consoleLogger.log(message, 'warn') : this.consoleLogger.log(message, 'warn', logData);
     }
 }
