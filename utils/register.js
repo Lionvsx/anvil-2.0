@@ -3,11 +3,14 @@ const fs = require('fs-extra').promises;
 const BaseCommand = require('./structures/BaseCommand');
 const BaseEvent = require('./structures/BaseEvent');
 const BaseInteraction = require('./structures/BaseInteraction')
+const BaseFunction = require('./structures/BaseFunction')
 const ascii = require('ascii-table');
 let table = new ascii('Commands');
 let interactionTable = new ascii('Interactions');
 table.setHeading('Command', 'Status')
 interactionTable.setHeading('Interaction', 'Status')
+let functionTable = new ascii('Functions');
+functionTable.setHeading('Function', 'Status')
 
 async function registerCommands(client, dir = '') {
     const filePath = path.join(__dirname, dir);
@@ -65,6 +68,27 @@ async function registerInteractions(client, dir = '') {
     }
 }
 
+async function registerFunctions(client, dir = '', operation) {
+    const filePath = path.join(__dirname, dir);
+    const files = await fs.readdir(filePath);
+    for (const file of files) {
+        const stat = await fs.lstat(path.join(filePath, file));
+        if (stat.isDirectory()) await registerFunctions(client, path.join(dir, file), operation);
+        if (file.endsWith('.js')) {
+            const Function = require(path.join(filePath, file));
+            if (Function.prototype instanceof BaseFunction) {
+                const func = new Function();
+                functionTable.addRow(`${func.name}.js`,'✅')
+                if (operation) client.openAIOperations.set(func.name, func);
+                else client.openAIFunctions.set(func.name, func);
+                if (!func.name) {
+                    functionTable.addRow(`${func.name}.js`, '❌ -> Error in the structure')
+                }
+            }
+        }
+    }
+}
+
 async function showCommandLoad() {
     if (table.__rows.length !== 0) {
         console.log(table.toString());
@@ -76,11 +100,17 @@ async function showCommandLoad() {
     } else {
         console.log(`No interactions to load !`)
     }
+    if (functionTable.__rows.length !== 0) {
+        console.log(functionTable.toString());
+    } else {
+        console.log(`No functions to load !`)
+    }
 }
 
 module.exports = {
     registerCommands,
     registerEvents,
     showCommandLoad,
-    registerInteractions
+    registerInteractions,
+    registerFunctions
 };
