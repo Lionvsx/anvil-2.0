@@ -96,19 +96,36 @@ class client extends Client {
         if (object instanceof DMChannel) return object.send(`**${this.loadingEmoji} | **${content}`)
     }
     get loadingEmoji() {
-        return this.emojis.cache.get('741276138319380583') ?? '🔄';
+        return this.emojiLibrary.loading
     }
 
     get successEmoji() {
-        return this.emojis.cache.get('745912720502554635') ?? '✅';
+        return this.emojiLibrary.check
     }
 
     get errorEmoji() {
-        return this.emojis.cache.get('745912720565731328') ?? '❌';
+        return this.emojiLibrary.cross
     }
 
     get warningEmoji() {
-        return this.emojis.cache.get('822782781960355850') ?? '⚠️';
+        return this.emojiLibrary.warning
+    }
+
+    emojiLibrary = {
+        get loading() { return this.emojis.cache.get('741276138319380583') },
+        get warning() { return this.emojis.cache.get('1134467379678675086') },
+        get cross() { return this.emojis.cache.get('745912720565731328') },
+        get check() { return this.emojis.cache.get('745912720502554635') },
+        get shutdown() { return this.emojis.cache.get('1134467389111664750') },
+        get gear() { return this.emojis.cache.get('1134467391590514750') },
+        get profile() { return this.emojis.cache.get('1134467387383615498') },
+        get lock() { return this.emojis.cache.get('1134467384095277246') },
+        get apps() { return this.emojis.cache.get('1134467380882444289') },
+        get trash() { return this.emojis.cache.get('1134467385609433301') },
+        get load() { return this.emojis.cache.get('1134467382803443822') },
+        get plus() { return this.emojis.cache.get('822782782244782151') },
+        get minus() { return this.emojis.cache.get('822782781960355850') },
+        get hamburger() { return this.emojis.cache.get('822782782157357097') },
     }
 
     get commandsJSON() {

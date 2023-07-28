@@ -27,7 +27,7 @@ module.exports = class ThreadConversation {
         });
 
         let embed = new EmbedBuilder()
-            .setDescription(`${client.emojis.cache.get('1134467379678675086')} This conversation does not have access to the full functions of anvil. It is only design to help you get the information Anvil needs in order to perform the operation you requested.`)
+            .setDescription(`${client.warningEmoji} This conversation does not have access to the full functions of anvil. It is only design to help you get the information Anvil needs in order to perform the operation you requested.`)
             .setColor('#2b2d31')
 
         this.channel.send({embeds: [embed]})
