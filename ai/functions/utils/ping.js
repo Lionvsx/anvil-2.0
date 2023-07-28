@@ -4,9 +4,9 @@ const {EmbedBuilder} = require("discord.js");
 module.exports = class PingFunction extends BaseFunction {
     constructor() {
         super('ping', 'utilities', "Get the ping of the bot", {
-            waiting: "🔄 Trying to ping ...",
-            finish: "✅ Operation ping successful",
-            error: "❌ Error while pinging"
+            waiting: "Trying to ping ...",
+            finish: "Operation ping successful",
+            error: "Error while pinging"
         })
         this.openaiFunction = {
             "name": this.name,

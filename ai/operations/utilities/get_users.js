@@ -4,9 +4,9 @@ const {getUsers} = require("../../../functions/get_functions");
 module.exports = class GetUsersFunction extends BaseFunction {
     constructor() {
         super("get_users", "utilities", "Get one or more users from a Discord server", {
-            waiting: "🔄 Trying to get users ...",
-            finish: "✅ User fetched",
-            error: "❌ Error while getting users"
+            waiting: "Trying to get users ...",
+            finish: "User fetched",
+            error: "Error while getting users"
         });
         this.openaiFunction = {
             "name": this.name,
@@ -27,8 +27,8 @@ module.exports = class GetUsersFunction extends BaseFunction {
         }
     }
 
-    async run(client, message, params) {
-        let [foundUsers, notFoundUsers] = getUsers(params.users, message.guild);
+    async run(client, guild, params) {
+        let [foundUsers, notFoundUsers] = getUsers(params.users, guild);
         if (notFoundUsers.length > 0) {
             return [true, `Users not found: ${notFoundUsers.join(", ")}`];
         }
@@ -41,8 +41,6 @@ module.exports = class GetUsersFunction extends BaseFunction {
                 roles: u.roles.cache.map(role => role.name)
             }
         });
-
-        console.log(users)
 
         return [true, `Found users: ${JSON.stringify(users)}`, false];
     }

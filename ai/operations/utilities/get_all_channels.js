@@ -4,9 +4,9 @@ const { ChannelType } = require("discord.js");
 module.exports = class GetAllChannels extends BaseFunction {
     constructor() {
         super('get_all_channels', 'utilities', "Get all channels from a Discord server", {
-            waiting: "🔄 Trying to get all channels ...",
-            finish: "✅ Server channels fetched",
-            error: "❌ Error while getting all channels"
+            waiting: "Trying to get all channels ...",
+            finish: "Server channels fetched",
+            error: "Error while getting all channels"
         });
         this.openaiFunction = {
             "name": this.name,
@@ -20,14 +20,14 @@ module.exports = class GetAllChannels extends BaseFunction {
         }
     }
 
-    async run(client, message) {
+    async run(client, guild) {
         let serverInfo = {
             categories: [],
             channels_without_category: []
         };
 
         // Fetching and storing all categories and their respective channels
-        message.guild.channels.cache.filter(channel => channel.type === ChannelType.GuildCategory).forEach(category => {
+        guild.channels.cache.filter(channel => channel.type === ChannelType.GuildCategory).forEach(category => {
             let categoryInfo = {
                 id: category.id,
                 name: category.name,
@@ -35,7 +35,7 @@ module.exports = class GetAllChannels extends BaseFunction {
                 subChannels: []
             };
 
-            message.guild.channels.cache.filter(channel => channel.parentId === category.id).forEach(channel => {
+            guild.channels.cache.filter(channel => channel.parentId === category.id).forEach(channel => {
                 categoryInfo.subChannels.push({
                     id: channel.id,
                     name: channel.name,
@@ -48,7 +48,7 @@ module.exports = class GetAllChannels extends BaseFunction {
         });
 
         // Check if there are any channels that are not in a category
-        message.guild.channels.cache.filter(channel => channel.type !== ChannelType.GuildCategory && !channel.parent).forEach(channel => {
+        guild.channels.cache.filter(channel => channel.type !== ChannelType.GuildCategory && !channel.parent).forEach(channel => {
             serverInfo.channels_without_category.push({
                 id: channel.id,
                 name: channel.name,

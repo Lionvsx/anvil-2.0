@@ -7,6 +7,11 @@ module.exports = class BaseFunction {
         this.description = description;
         this.messages = messages;
         this.consoleLogger = new Logger(name);
+        this.openaiFunction = undefined;
+    }
+
+    async run() {
+        return [false, "Not implemented yet", false];
     }
 
     log(message, logData = undefined) {
