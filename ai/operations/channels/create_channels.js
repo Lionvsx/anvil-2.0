@@ -54,7 +54,7 @@ module.exports = class CreateChannelsFunction extends BaseFunction {
             let parentCategoryID = null;
             if(channelInfo.parentCategory) {
                 let parentCategory = guild.channels.cache.find(
-                    ch => ch.name === channelInfo.parentCategory || ch.id === channelInfo.parentCategory
+                    ch => ch.type === ChannelType.GuildCategory && (ch.name.toLowerCase().includes(channelInfo.parentCategory.toLowerCase()) || ch.id === channelInfo.parentCategory)
                 );
 
                 // Check if the parent category was found.
